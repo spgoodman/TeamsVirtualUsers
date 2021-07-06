@@ -1,12 +1,10 @@
-Write-Output "Installing Teams Virtual Users..."
-Write-Output "Installing Chocolatey, OBS, Teams and Power Automate Desktop"
+Write-Output "Setting up Teams Virtual Users..."
+Write-Output "Installing Chocolatey, OBS and Teams"
 # Install Chocolatey
 Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 # Install Applications
-choco install autoit.install -y
-choco install powerautomatedesktop -y
 choco install obs-studio.install -y
 choco install microsoft-teams -y
 Write-Output "Downloading Custom OBS Configuration"
