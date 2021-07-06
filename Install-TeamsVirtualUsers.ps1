@@ -34,15 +34,9 @@ foreach ($VirtualUser in $VirtualUsers)
     Invoke-WebRequest -Uri "$($BaseURL)/$($VirtualUser).mp4" -OutFile "$($VirtualUserDir)\$($VirtualUser).mp4" -UseBasicParsing
 }
 Write-Output "Updating OBS Scenes"
-$VirtualUsersScenes = Get-Content -Raw -Path "$($Env:APPDATA)\obs-studio\basic\scenes\VirtualUsers.json" | ConvertFrom-Json
-for ($i=0; $i -lt $VirtualUsersScenes.sources.count; $i++)
-{
-    if($VirtualUsersScenes.sources[$i].id -eq "ffmpeg_source")
-    {
-        $VirtualUsersScenes.sources[$i].settings.local_file = $VirtualUsersScenes.sources[$i].settings.local_file -replace "C:/users/admin",$env:UserProfile -replace "\\","/"
-    }
-}
-$VirtualUsersScenes | ConvertTo-Json | Out-File -FilePath "$($Env:APPDATA)\obs-studio\basic\scenes\VirtualUsers.json"
+$VirtualUsersScenes = Get-Content -Raw -Path "$($Env:APPDATA)\obs-studio\basic\scenes\VirtualUsers.json"
+$VirtualUsersScenes = $VirtualUsersScenes -replace "C:/users/admin",$env:UserProfile -replace "\\","/"
+$VirtualUsersScenes | Out-File -FilePath "$($Env:APPDATA)\obs-studio\basic\scenes\VirtualUsers.json"
 Write-Output "Choose the character to show when OBS launches (you can change this later in the app)"
 for ($i=0; $i -lt $VirtualUsers.Count; $i++)
 {
@@ -55,9 +49,8 @@ while (!($Choice -in 1 .. $VirtualUsers.Count))
     $Choice
 }
 Write-Output "You chose $($VirtualUsers[$Choice-1]) - updating scene file with current scene selection"
-$VirtualUsersScenes.current_program_scene = $VirtualUsers[$Choice-1]
-$VirtualUsersScenes.current_scene = $VirtualUsers[$Choice-1]
-$VirtualUsersScenes | ConvertTo-Json | Out-File -FilePath "$($Env:APPDATA)\obs-studio\basic\scenes\VirtualUsers.json" -Encoding UTF8
+$VirtualUsersScenes = $VirtualUsersScenes -replace "`"current_program_scene`":`"Chandler`",`"current_scene`":`"Chandler`"","`"current_program_scene`":`"$($VirtualUsers[$Choice-1])`",`"current_scene`":`"$($VirtualUsers[$Choice-1])`""
+$VirtualUsersScenes | Out-File -FilePath "$($Env:APPDATA)\obs-studio\basic\scenes\VirtualUsers.json" -Encoding UTF8
 
 Write-Output "Creating OBS as a Startup App with Virtual Webcam Enabled"
 $ShortcutFile = "$($Env:APPDATA)\Microsoft\Windows\Start Menu\Programs\Startup\OBS Studio - Virtual Webcam Enabled.lnk"
